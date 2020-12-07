@@ -1,2 +1,2 @@
-# katyusha-demos
-[WIP] Demonstrations for Katyusha.
+# Katyusha Demos
+

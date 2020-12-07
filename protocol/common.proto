@@ -1,0 +1,15 @@
+// protoc --gofast_out=plugins=grpc:. protocol/*.proto
+
+syntax = "proto3";
+
+package pb;
+
+option go_package = "protocol/pb";
+
+// 空请求
+message NullReq {}
+
+// 空返回
+message NullRes {}
+
+

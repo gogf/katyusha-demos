@@ -1,0 +1,21 @@
+// protoc --gofast_out=plugins=grpc:. protocol/*.proto
+
+syntax = "proto3";
+
+package pb;
+
+option go_package = "protocol/pb";
+
+service Echo{
+    rpc Say(SayReq) returns (SayRes) {}
+}
+
+message SayReq {
+    string content = 1;
+}
+
+message SayRes {
+    string content = 1;
+}
+
+
