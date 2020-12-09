@@ -79,5 +79,13 @@ func main() {
 	//TestSignUp()
 	//TestCheckPassport()
 	//TestSignIn()
-	TestGetSession()
+	//TestGetSession()
+
+	res, err := userClient.SignUp(context.Background(), &demos.SignUpReq{
+		Passport:  "john",
+		Password:  "123",
+		Password2: "1234",
+		Nickname:  "JohnGuo",
+	})
+	g.Log().Print(res, err)
 }

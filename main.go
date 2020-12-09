@@ -18,7 +18,10 @@ func main() {
 	c := krpc.Server.NewGrpcServerConfig()
 	c.Options = append(
 		c.Options,
-		krpc.Server.ChainUnary(service.Interceptor.UnaryCtx),
+		krpc.Server.ChainUnary(
+			service.Interceptor.UnaryCtx,
+			service.Interceptor.UnaryValidate,
+		),
 	)
 	s := krpc.Server.NewGrpcServer(c)
 	demos.RegisterEchoServer(s.Server, api.Echo)
