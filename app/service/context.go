@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/gogf/katyusha-demos/app/model"
-	"github.com/gogf/gf/net/ghttp"
+	"github.com/gogf/katyusha/krpc"
 )
 
 // 上下文管理服务
@@ -12,8 +12,19 @@ var Context = new(serviceContext)
 type serviceContext struct{}
 
 // 初始化上下文对象指针到上下文对象中，以便后续的请求流程中可以修改。
-func (s *serviceContext) Init(r *ghttp.Request, customCtx *model.Context) {
-	r.SetCtxVar(model.ContextKey, customCtx)
+func (s *serviceContext) Init(ctx context.Context, customCtx *model.Context) context.Context {
+	return context.WithValue(ctx, model.ContextKey, customCtx)
+}
+
+// 获取服务间传递的信息，可能为空
+func (s *serviceContext) GetContextGrpc(ctx context.Context) *model.ContextGrpc {
+	v := krpc.Ctx.IngoingMap(ctx).GetVar(model.ContextKeyGrpc)
+	if v.IsNil() {
+		return nil
+	}
+	var contextGrpc *model.ContextGrpc
+	_ = v.Struct(&contextGrpc)
+	return contextGrpc
 }
 
 // 获得上下文变量，如果没有设置，那么返回nil

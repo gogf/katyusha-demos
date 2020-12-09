@@ -1,33 +1,21 @@
-# HTTP Server.
-[server]
-	Address        = ":8199"
-	ServerRoot     = "public"
-	ServerAgent    = "gf-demos"
-	LogPath        = "/tmp/log/gf-demos/server"
-	NameToUriType  = 2
-	RouteOverWrite = true
+# 注册发现
+[discovery]
+    endpoints = ["127.0.0.1:6379"]
 
-# Logger configurations.
+# HTTP Server配置
+[server]
+	Address        = ":8000"
+
+# 全局日志配置
 [logger]
-    Path   = "/tmp/log/gf-demos"
+    Path   = "/tmp/log/katyusha-demos"
     Level  = "all"
     Stdout = true
 
-# Template view configurations.
-[viewer]
-    Path        = "template"
-    DefaultFile = "index.html"
-    Delimiters  =  ["${", "}"]
-
-# Database configurations.
+# 数据库连接
 [database]
     link  = "mysql:root:12345678@tcp(127.0.0.1:3306)/test"
     debug = true
-    # 数据库日志对象配置
-    [database.logger]
-        Path   = "/tmp/log/gf-demos/sql"
-        Level  = "all"
-        Stdout = true
 
 # GF-CLI工具配置
 [gfcli]
@@ -36,7 +24,3 @@
         link  = "mysql:root:12345678@tcp(127.0.0.1:3306)/test"
         table = "user"
 
-# HTTP basic authentication passport/password for swagger api page.
-#[swagger]
-#    user = "123"
-#    pass = "123"

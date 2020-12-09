@@ -17,3 +17,10 @@ type ServiceUserSignUpReq struct {
 	Password string
 	Nickname string
 }
+
+// 登录输入参数
+type ServiceUserSignInReq struct {
+	Passport string
+	Password string
+	Agent    string
+}

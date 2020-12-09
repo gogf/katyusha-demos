@@ -1,0 +1,16 @@
+
+syntax = "proto3";
+
+package pb;
+
+option go_package = "protobuf/demos";
+
+// 用户表实体
+message EntityUser {
+  uint32 Id       = 1; // 用户ID
+  string Passport = 2; // 用户账号
+  string Password = 3; // 用户密码
+  string Nickname = 4; // 用户昵称
+  int64  CreateAt = 5; // 创建时间
+  int64  UpdateAt = 6; // 更新时间
+}

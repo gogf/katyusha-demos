@@ -3,29 +3,81 @@ package main
 import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/os/genv"
-	"github.com/gogf/katyusha-demos/protocol/pb"
+	"github.com/gogf/katyusha-demos/protobuf/demos"
 	"github.com/gogf/katyusha/discovery"
 	"github.com/gogf/katyusha/krpc"
 	"golang.org/x/net/context"
 )
 
-func main() {
+var (
+	userClient demos.UserClient
+)
+
+func init() {
 	genv.SetMap(g.MapStrStr{
 		discovery.EnvKeyEndpoints: "127.0.0.1:2379",
 	})
-
-	conn, err := krpc.NewGrpcClientConn("demo")
+	conn, err := krpc.Client.NewGrpcClientConn("demos")
 	if err != nil {
-		panic(err)
+		g.Log().Fatal(err)
 	}
-	defer conn.Close()
+	userClient = demos.NewUserClient(conn)
+}
 
-	client := pb.NewUserClient(conn)
-	res, err := client.SignUp(context.Background(), &pb.SignUpReq{
-		Passport:  "john2",
+func TestSignUp() {
+	res, err := userClient.SignUp(context.Background(), &demos.SignUpReq{
+		Passport:  "john",
 		Password:  "123",
 		Password2: "123",
-		Nickname:  "JohnGuo2",
+		Nickname:  "JohnGuo",
 	})
 	g.Log().Print(res, err)
+}
+
+func TestCheckPassport() {
+	res, err := userClient.CheckPassport(context.Background(), &demos.CheckPassportReq{
+		Passport: "john",
+	})
+	g.Log().Print(res, err)
+}
+
+func TestCheckNickName() {
+	res, err := userClient.CheckNickName(context.Background(), &demos.CheckNickNameReq{
+		Nickname: "john",
+	})
+	g.Log().Print(res, err)
+}
+
+func TestGetUser() {
+	res, err := userClient.GetUser(context.Background(), &demos.GetUserReq{
+		UserId: 1,
+	})
+	g.Log().Print(res, err)
+}
+
+func TestSignIn() {
+	res, err := userClient.SignIn(context.Background(), &demos.SignInReq{
+		Passport: "john",
+		Password: "123",
+	})
+	g.Log().Print(res, err)
+}
+
+func TestGetSession() {
+	signInRes, err := userClient.SignIn(context.Background(), &demos.SignInReq{
+		Passport: "john",
+		Password: "123",
+	})
+	g.Log().Printf(`%+v, %v`, signInRes, err)
+	getSessionRes, err := userClient.GetSession(context.Background(), &demos.GetSessionReq{
+		Token: signInRes.Token,
+	})
+	g.Log().Printf(`%+v, %v`, getSessionRes, err)
+}
+
+func main() {
+	//TestSignUp()
+	//TestCheckPassport()
+	//TestSignIn()
+	TestGetSession()
 }

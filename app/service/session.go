@@ -2,42 +2,78 @@ package service
 
 import (
 	"context"
+	"github.com/gogf/gf/os/gsession"
+	"github.com/gogf/gf/util/guid"
 	"github.com/gogf/katyusha-demos/app/model"
+	"github.com/gogf/katyusha/krpc"
+	"time"
 )
 
 // Session管理服务
-var Session = new(serviceSession)
+var Session = &serviceSession{
+	CtxKeyGrpc: "token", // 用于Session唯一性识别
+}
 
-type serviceSession struct{}
+type serviceSession struct {
+	CtxKeyGrpc string
+}
 
 const (
-	// 用户信息存放在Session中的Key
-	sessionKeyUser = "SessionKeyUser"
+	sessionKey = "SessionKey" // 用于Session中的数据存储Key
+)
+
+var (
+	// 用于Session存储的Storage，测试场景下使用内存，实际业务中往往使用redis
+	sessionStorage = gsession.New(24*time.Hour, gsession.NewStorageMemory())
 )
 
 // 设置用户Session.
-func (s *serviceSession) SetUser(ctx context.Context, user *model.User) error {
-	return Context.Get(ctx).Session.Set(sessionKeyUser, user)
+func (s *serviceSession) New(sessionId string) *gsession.Session {
+	return sessionStorage.New(sessionId)
+}
+
+// 从Context读取SessionToken。
+func (s *serviceSession) Token(ctx context.Context) string {
+	return krpc.Ctx.IngoingMap(ctx).GetVar(s.CtxKeyGrpc).String()
+}
+
+// 设置用户Session.
+func (s *serviceSession) Set(ctx context.Context, data *model.Session) error {
+	customCtx := Context.Get(ctx)
+	if customCtx.Session == nil {
+		customCtx.Session = s.New(guid.S())
+	}
+	return customCtx.Session.Set(sessionKey, data)
 }
 
 // 获取当前登录的用户信息对象，如果用户未登录返回nil。
-func (s *serviceSession) GetUser(ctx context.Context) *model.User {
+func (s *serviceSession) GetByToken(ctx context.Context, token string) *model.Session {
+	if v := s.New(token).GetVar(sessionKey); !v.IsNil() {
+		var session *model.Session
+		_ = v.Struct(&session)
+		return session
+	}
+	return nil
+}
+
+// 获取当前登录的用户信息对象，如果用户未登录返回nil。
+func (s *serviceSession) Get(ctx context.Context) *model.Session {
 	customCtx := Context.Get(ctx)
-	if customCtx != nil {
-		if v := customCtx.Session.GetVar(sessionKeyUser); !v.IsNil() {
-			var user *model.User
-			_ = v.Struct(&user)
-			return user
+	if customCtx.Session != nil {
+		if v := customCtx.Session.GetVar(sessionKey); !v.IsNil() {
+			var session *model.Session
+			_ = v.Struct(&session)
+			return session
 		}
 	}
 	return nil
 }
 
 // 删除用户Session。
-func (s *serviceSession) RemoveUser(ctx context.Context) error {
+func (s *serviceSession) Remove(ctx context.Context) error {
 	customCtx := Context.Get(ctx)
-	if customCtx != nil {
-		return customCtx.Session.Remove(sessionKeyUser)
+	if customCtx.Session != nil {
+		return customCtx.Session.Remove(sessionKey)
 	}
 	return nil
 }

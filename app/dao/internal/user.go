@@ -5,6 +5,7 @@
 package internal
 
 import (
+	"context"
 	"database/sql"
 	"github.com/gogf/katyusha-demos/app/model"
 	"github.com/gogf/gf/database/gdb"
@@ -46,6 +47,14 @@ var (
 		},
 	}
 )
+
+// Ctx is a chaining function, which creates and returns a new DB that is a shallow copy
+// of current DB object and with given context in it.
+// Note that this returned DB object can be used only once, so do not assign it to
+// a global or package variable for long using.
+func (d *UserDao) Ctx(ctx context.Context) *UserDao {
+	return &UserDao{M:d.M.Ctx(ctx)}
+}
 
 // As sets an alias name for current table.
 func (d *UserDao) As(as string) *UserDao {

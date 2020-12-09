@@ -4,7 +4,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "protocol/pb";
+option go_package = "protobuf/demos";
 
 // 空请求
 message NullReq {}

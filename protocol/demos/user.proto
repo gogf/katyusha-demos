@@ -4,9 +4,10 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "protocol/pb";
+option go_package = "protobuf/demos";
 
-import "protocol/common.proto";
+import "protocol/demos/common.proto";
+import "protocol/demos/entity/entity_user.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 // 用户服务
@@ -16,23 +17,13 @@ service User {
   // 登录
   rpc SignIn(SignInReq) returns (SignInRes) {}
   // 查询账号唯一性
-  rpc CheckPassport(CheckPassportReq) returns (NullRes) {}
+  rpc CheckPassport(CheckPassportReq) returns (CheckPassportRes) {}
   // 查询昵称唯一性
   rpc CheckNickName(CheckNickNameReq) returns (CheckNickNameRes) {}
-  // 查询指定用户是否已登录
-  rpc IsSignedIn(IsSignedInReq) returns (IsSignedInRes) {}
+  // 获取指定Session信息
+  rpc GetSession(GetSessionReq) returns (GetSessionRes) {}
   // 查询指定用户信息
   rpc GetUser(GetUserReq) returns (GetUserRes) {}
-}
-
-// 用户表实体
-message UserEntity {
-  uint32 Id       = 1; // 用户ID
-  string Passport = 2; // 用户账号
-  string Password = 3; // 用户密码
-  string Nickname = 4; // 用户昵称
-  int64  CreateAt = 5; // 创建时间
-  int64  UpdateAt = 6; // 更新时间
 }
 
 // 注册请求
@@ -53,11 +44,14 @@ message SignInReq {
   string Passport = 1 [(gogoproto.moretags) = 'v:"required#账号不能为空"'];
   // 密码
   string Password = 2 [(gogoproto.moretags) = 'v:"required#密码不能为空"'];
+  // 客户端类型(H5/IOS/Android/Wechat/Micro)
+  string Agent    = 3;
 }
 
 // 登录结果
 message SignInRes {
-  UserEntity User = 1;
+  EntityUser User  = 1; // 用户信息
+  string     Token = 2; // SessionId
 }
 
 // 账号唯一性检测请求参数，用于前后端交互参数格式约定
@@ -67,7 +61,7 @@ message CheckPassportReq  {
 
 // 账号唯一性检测结果
 message CheckPassportRes {
-  string Ok = 1;
+  bool Ok = 1;
 }
 
 // 昵称唯一性检测请求参数，用于前后端交互参数格式约定
@@ -77,25 +71,34 @@ message CheckNickNameReq {
 
 // 昵称唯一性检测结果
 message CheckNickNameRes {
-  string Ok = 1;
-}
-
-// 请求给定的用户是否登录状态
-message IsSignedInReq {
-  string Passport = 1 [(gogoproto.moretags) = 'v:"required#账号不能为空"'];
-}
-
-// 请求登录状态结果
-message IsSignedInRes {
   bool Ok = 1;
+}
+
+// 获取用户Session信息
+message GetSessionReq {
+  string Token = 1 [(gogoproto.moretags) = 'v:"required#Token不能为空"'];
+}
+
+// 获取用户Session信息结果
+message GetSessionRes {
+  SessionUser User       = 1; // Session中的用户信息
+  int64       LoginTime  = 2; // 登录时间
+  string      LoginAgent = 3; // 登录终端
+}
+
+message SessionUser {
+  uint32 Id       = 1; // 用户ID
+  string Passport = 2; // 用户账号
+  string Password = 3; // 用户密码
+  string Nickname = 4; // 用户昵称
 }
 
 // 查询指定用户信息
 message GetUserReq {
-  string Passport = 1 [(gogoproto.moretags) = 'v:"required#账号不能为空"'];
+  uint32 UserId = 1 [(gogoproto.moretags) = 'v:"min:1#用户ID不能为空"'];
 }
 
 // 查询指定用户信息结果
 message GetUserRes {
-  UserEntity User = 1; // 用户信息
+  EntityUser User = 1; // 用户信息
 }

@@ -4,19 +4,24 @@ import (
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/os/genv"
 	"github.com/gogf/katyusha-demos/app/api"
-	"github.com/gogf/katyusha-demos/protocol/pb"
+	"github.com/gogf/katyusha-demos/app/service"
+	"github.com/gogf/katyusha-demos/protobuf/demos"
 	"github.com/gogf/katyusha/discovery"
 	"github.com/gogf/katyusha/krpc"
 )
 
 func main() {
 	genv.SetMap(g.MapStrStr{
-		discovery.EnvKeyAppId:     `demo`,
-		discovery.EnvKeyMetaData:  `{"weight":100}`,
+		discovery.EnvKeyAppId:     `demos`,
 		discovery.EnvKeyEndpoints: "127.0.0.1:2379",
 	})
-	s := krpc.NewGrpcServer()
-	pb.RegisterEchoServer(s.Server, api.Echo)
-	pb.RegisterUserServer(s.Server, api.User)
+	c := krpc.Server.NewGrpcServerConfig()
+	c.Options = append(
+		c.Options,
+		krpc.Server.ChainUnary(service.Interceptor.UnaryCtx),
+	)
+	s := krpc.Server.NewGrpcServer(c)
+	demos.RegisterEchoServer(s.Server, api.Echo)
+	demos.RegisterUserServer(s.Server, api.User)
 	s.Run()
 }

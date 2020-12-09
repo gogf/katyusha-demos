@@ -6,7 +6,7 @@ import (
 	"github.com/gogf/gf/util/gconv"
 	"github.com/gogf/katyusha-demos/app/model"
 	"github.com/gogf/katyusha-demos/app/service"
-	"github.com/gogf/katyusha-demos/protocol/pb"
+	"github.com/gogf/katyusha-demos/protobuf/demos"
 )
 
 // 用户服务
@@ -15,36 +15,76 @@ var User = &apiUser{}
 type apiUser struct{}
 
 // 注册
-func (s *apiUser) SignUp(ctx context.Context, req *pb.SignUpReq) (*pb.NullRes, error) {
-	var serviceReq *model.ServiceUserSignUpReq
+func (s *apiUser) SignUp(ctx context.Context, req *demos.SignUpReq) (*demos.NullRes, error) {
+	var (
+		res        demos.NullRes
+		serviceReq *model.ServiceUserSignUpReq
+	)
 	if err := gconv.Struct(req, &serviceReq); err != nil {
 		return nil, gerror.Current(err)
 	}
-	err := service.User.SignUp(serviceReq)
-	return nil, err
+	err := service.User.SignUp(ctx, serviceReq)
+	return &res, err
 }
 
 // 登录
-func (s *apiUser) SignIn(ctx context.Context, req *pb.SignInReq) (*pb.SignInRes, error) {
-	panic("implement me")
+func (s *apiUser) SignIn(ctx context.Context, req *demos.SignInReq) (*demos.SignInRes, error) {
+	var (
+		res        = demos.SignInRes{}
+		serviceReq *model.ServiceUserSignInReq
+	)
+	if err := gconv.Struct(req, &serviceReq); err != nil {
+		return nil, err
+	}
+	user, err := service.User.SignIn(ctx, serviceReq)
+	if err != nil {
+		return nil, err
+	}
+	if err := gconv.Struct(user, &res.User); err != nil {
+		return nil, err
+	}
+	if session := service.Context.Get(ctx).Session; session != nil {
+		res.Token = session.Id()
+	}
+	return &res, err
+}
+
+// 获取Session信息
+func (s *apiUser) GetSession(ctx context.Context, req *demos.GetSessionReq) (*demos.GetSessionRes, error) {
+	session := service.Session.GetByToken(ctx, req.Token)
+	if session == nil {
+		return nil, gerror.New("Session不存在")
+	}
+	var res demos.GetSessionRes
+	if err := gconv.Struct(session, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 // 检测账号唯一性
-func (s *apiUser) CheckPassport(ctx context.Context, req *pb.CheckPassportReq) (*pb.NullRes, error) {
-	panic("implement me")
+func (s *apiUser) CheckPassport(ctx context.Context, req *demos.CheckPassportReq) (*demos.CheckPassportRes, error) {
+	res := demos.CheckPassportRes{}
+	res.Ok = service.User.CheckPassport(ctx, req.Passport)
+	return &res, nil
 }
 
 // 检测昵称唯一性
-func (s *apiUser) CheckNickName(ctx context.Context, req *pb.CheckNickNameReq) (*pb.CheckNickNameRes, error) {
-	panic("implement me")
-}
-
-// 判断给定用户是否已登录
-func (s *apiUser) IsSignedIn(ctx context.Context, req *pb.IsSignedInReq) (*pb.IsSignedInRes, error) {
-	panic("implement me")
+func (s *apiUser) CheckNickName(ctx context.Context, req *demos.CheckNickNameReq) (*demos.CheckNickNameRes, error) {
+	res := demos.CheckNickNameRes{}
+	res.Ok = service.User.CheckPassport(ctx, req.Nickname)
+	return &res, nil
 }
 
 // 查询用户信息
-func (s *apiUser) GetUser(ctx context.Context, req *pb.GetUserReq) (*pb.GetUserRes, error) {
-	panic("implement me")
+func (s *apiUser) GetUser(ctx context.Context, req *demos.GetUserReq) (*demos.GetUserRes, error) {
+	res := demos.GetUserRes{}
+	user, err := service.User.GetUser(ctx, uint(req.UserId))
+	if err != nil {
+		return nil, err
+	}
+	if err := gconv.Struct(user, &res.User); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
