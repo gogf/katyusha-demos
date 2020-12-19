@@ -2,7 +2,7 @@
 
 syntax = "proto3";
 
-package pb;
+package demos;
 
 option go_package = "protobuf/demos";
 
