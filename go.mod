@@ -3,8 +3,8 @@ module github.com/gogf/katyusha-demos
 go 1.11
 
 require (
-	github.com/gogf/gf v1.14.6-0.20201210171253-363f6eba4454
-	github.com/gogf/katyusha v0.0.0-20201210171714-50a4d6c5c88f
+	github.com/gogf/gf v1.14.7-0.20201215165042-7db1cfa8987b
+	github.com/gogf/katyusha v0.0.0-20201219155529-faa901bdd86f
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect

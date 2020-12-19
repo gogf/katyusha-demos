@@ -1,16 +1,18 @@
 # 注册发现
 [discovery]
-    endpoints = ["127.0.0.1:6379"]
+    endpoints = ["127.0.0.1:2379"]
 
-# HTTP Server配置
-[server]
-	Address        = ":8000"
+# GRPC Server
+[grpcserver]
+    appId            = "demos"
+	address          = ":8000"
+    accessLogEnabled = true
 
 # 全局日志配置
 [logger]
-    Path   = "/tmp/log/katyusha-demos"
-    Level  = "all"
-    Stdout = true
+    path   = "/tmp/log/katyusha-demos"
+    level  = "all"
+    stdout = true
 
 # 数据库连接
 [database]

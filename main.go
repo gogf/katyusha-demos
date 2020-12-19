@@ -1,20 +1,13 @@
 package main
 
 import (
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/os/genv"
 	"github.com/gogf/katyusha-demos/app/api"
 	"github.com/gogf/katyusha-demos/app/service"
 	"github.com/gogf/katyusha-demos/protobuf/demos"
-	"github.com/gogf/katyusha/discovery"
 	"github.com/gogf/katyusha/krpc"
 )
 
 func main() {
-	genv.SetMap(g.MapStrStr{
-		discovery.EnvKeyAppId:     `demos`,
-		discovery.EnvKeyEndpoints: "127.0.0.1:2379",
-	})
 	c := krpc.Server.NewGrpcServerConfig()
 	c.Options = append(
 		c.Options,
