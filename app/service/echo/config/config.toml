@@ -1,0 +1,14 @@
+# 注册发现
+[discovery]
+    endpoints = ["127.0.0.1:2379"]
+
+# GRPC Server
+[grpcserver]
+    appId            = "echo"
+    accessLogEnabled = true
+
+# 全局日志配置
+[logger]
+    path   = "/tmp/log/katyusha-demos"
+    level  = "all"
+    stdout = true

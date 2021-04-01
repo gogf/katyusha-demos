@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package echo;
+
+option go_package = "protobuf/echo";
+
+// 空请求
+message NullReq {}
+
+// 空返回
+message NullRes {}
+
+
