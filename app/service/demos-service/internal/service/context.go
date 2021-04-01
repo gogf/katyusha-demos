@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/gogf/katyusha-demos/app/model"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/model"
 	"github.com/gogf/katyusha/krpc"
 )
 
@@ -18,7 +18,7 @@ func (s *serviceContext) Init(ctx context.Context, customCtx *model.Context) con
 
 // 获取服务间传递的信息，可能为空
 func (s *serviceContext) GetContextGrpc(ctx context.Context) *model.ContextGrpc {
-	v := krpc.Ctx.IngoingMap(ctx).GetVar(model.ContextKeyGrpc)
+	v := krpc.Ctx.IncomingMap(ctx).GetVar(model.ContextKeyGrpc)
 	if v.IsNil() {
 		return nil
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/gogf/gf/errors/gerror"
 	"github.com/gogf/gf/util/gvalid"
-	"github.com/gogf/katyusha-demos/app/model"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 )

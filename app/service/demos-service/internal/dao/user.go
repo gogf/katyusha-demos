@@ -4,9 +4,7 @@
 
 package dao
 
-import (
-	"github.com/gogf/katyusha-demos/app/dao/internal"
-)
+import "github.com/gogf/katyusha-demos/app/service/demos-service/internal/dao/internal"
 
 // userDao is the manager for logic model data accessing
 // and custom defined data operations functions management. You can define

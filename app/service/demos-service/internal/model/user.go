@@ -5,7 +5,7 @@
 package model
 
 import (
-	"github.com/gogf/katyusha-demos/app/model/internal"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/model/internal"
 )
 
 // User is the golang structure for table user.

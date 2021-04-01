@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/gogf/gf/os/gsession"
 	"github.com/gogf/gf/util/guid"
-	"github.com/gogf/katyusha-demos/app/model"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/model"
 	"github.com/gogf/katyusha/krpc"
 	"time"
 )
@@ -34,7 +34,7 @@ func (s *serviceSession) New(sessionId string) *gsession.Session {
 
 // 从Context读取SessionToken。
 func (s *serviceSession) Token(ctx context.Context) string {
-	return krpc.Ctx.IngoingMap(ctx).GetVar(s.CtxKeyGrpc).String()
+	return krpc.Ctx.IncomingMap(ctx).GetVar(s.CtxKeyGrpc).String()
 }
 
 // 设置用户Session.

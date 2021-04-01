@@ -6,8 +6,8 @@ import (
 	"github.com/gogf/gf/errors/gerror"
 	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/os/gtime"
-	"github.com/gogf/katyusha-demos/app/dao"
-	"github.com/gogf/katyusha-demos/app/model"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/dao"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/model"
 )
 
 // 中间件管理服务

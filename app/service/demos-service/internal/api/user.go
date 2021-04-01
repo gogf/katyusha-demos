@@ -4,18 +4,18 @@ import (
 	"context"
 	"github.com/gogf/gf/errors/gerror"
 	"github.com/gogf/gf/util/gconv"
-	"github.com/gogf/katyusha-demos/app/model"
-	"github.com/gogf/katyusha-demos/app/service"
-	"github.com/gogf/katyusha-demos/protobuf/demos"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/model"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/service"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/protobuf/demos"
 )
 
 // 用户服务
-var User = &apiUser{}
+var User = &userApi{}
 
-type apiUser struct{}
+type userApi struct{}
 
 // 注册
-func (s *apiUser) SignUp(ctx context.Context, req *demos.SignUpReq) (*demos.NullRes, error) {
+func (s *userApi) SignUp(ctx context.Context, req *demos.SignUpReq) (*demos.NullRes, error) {
 	var (
 		res        demos.NullRes
 		serviceReq *model.ServiceUserSignUpReq
@@ -28,7 +28,7 @@ func (s *apiUser) SignUp(ctx context.Context, req *demos.SignUpReq) (*demos.Null
 }
 
 // 登录
-func (s *apiUser) SignIn(ctx context.Context, req *demos.SignInReq) (*demos.SignInRes, error) {
+func (s *userApi) SignIn(ctx context.Context, req *demos.SignInReq) (*demos.SignInRes, error) {
 	var (
 		res        = demos.SignInRes{}
 		serviceReq *model.ServiceUserSignInReq
@@ -50,7 +50,7 @@ func (s *apiUser) SignIn(ctx context.Context, req *demos.SignInReq) (*demos.Sign
 }
 
 // 获取Session信息
-func (s *apiUser) GetSession(ctx context.Context, req *demos.GetSessionReq) (*demos.GetSessionRes, error) {
+func (s *userApi) GetSession(ctx context.Context, req *demos.GetSessionReq) (*demos.GetSessionRes, error) {
 	session := service.Session.GetByToken(ctx, req.Token)
 	if session == nil {
 		return nil, gerror.New("Session不存在")
@@ -63,21 +63,21 @@ func (s *apiUser) GetSession(ctx context.Context, req *demos.GetSessionReq) (*de
 }
 
 // 检测账号唯一性
-func (s *apiUser) CheckPassport(ctx context.Context, req *demos.CheckPassportReq) (*demos.CheckPassportRes, error) {
+func (s *userApi) CheckPassport(ctx context.Context, req *demos.CheckPassportReq) (*demos.CheckPassportRes, error) {
 	res := demos.CheckPassportRes{}
 	res.Ok = service.User.CheckPassport(ctx, req.Passport)
 	return &res, nil
 }
 
 // 检测昵称唯一性
-func (s *apiUser) CheckNickName(ctx context.Context, req *demos.CheckNickNameReq) (*demos.CheckNickNameRes, error) {
+func (s *userApi) CheckNickName(ctx context.Context, req *demos.CheckNickNameReq) (*demos.CheckNickNameRes, error) {
 	res := demos.CheckNickNameRes{}
 	res.Ok = service.User.CheckPassport(ctx, req.Nickname)
 	return &res, nil
 }
 
 // 查询用户信息
-func (s *apiUser) GetUser(ctx context.Context, req *demos.GetUserReq) (*demos.GetUserRes, error) {
+func (s *userApi) GetUser(ctx context.Context, req *demos.GetUserReq) (*demos.GetUserRes, error) {
 	res := demos.GetUserRes{}
 	user, err := service.User.GetUser(ctx, uint(req.UserId))
 	if err != nil {

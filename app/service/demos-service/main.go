@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gogf/katyusha-demos/app/api"
-	"github.com/gogf/katyusha-demos/app/service"
-	"github.com/gogf/katyusha-demos/protobuf/demos"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/api"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/service"
+	"github.com/gogf/katyusha-demos/app/service/demos-service/protobuf/demos"
 	"github.com/gogf/katyusha/krpc"
 )
 
