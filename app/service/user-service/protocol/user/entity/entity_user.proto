@@ -1,9 +1,9 @@
 
 syntax = "proto3";
 
-package demos;
+package user;
 
-option go_package = "protobuf/demos";
+option go_package = "protobuf/user";
 
 // 用户表实体
 message EntityUser {

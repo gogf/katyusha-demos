@@ -1,13 +1,12 @@
-// protoc --gofast_out=plugins=grpc:. protocol/*.proto -I/Users/john/Workspace/Go/GOPATH/src/github.com/gogf/katyusha-demos -I/Users/john/Workspace/Go/GOPATH/src
 
 syntax = "proto3";
 
-package demos;
+package user;
 
-option go_package = "protobuf/demos";
+option go_package = "protobuf/user";
 
-import "protocol/demos/common.proto";
-import "protocol/demos/entity/entity_user.proto";
+import "protocol/user/common.proto";
+import "protocol/user/entity/entity_user.proto";
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 // 用户服务
