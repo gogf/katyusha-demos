@@ -8,6 +8,7 @@ import (
 
 func main() {
 	c := krpc.Server.NewGrpcServerConfig()
+	c.AppId = []string{}
 	c.Options = append(
 		c.Options,
 	)
