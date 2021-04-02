@@ -4,7 +4,6 @@
 
 # GRPC Server
 [grpcserver]
-    appId            = "echo"
     accessLogEnabled = true
 
 # 全局日志配置

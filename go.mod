@@ -4,7 +4,7 @@ go 1.11
 
 require (
 	github.com/gogf/gf v1.15.5
-	github.com/gogf/katyusha v0.1.3-0.20210401090032-03a4d5825c76
+	github.com/gogf/katyusha v0.1.3-0.20210401102130-3cde5aa143ca
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
 	google.golang.org/grpc v1.33.2

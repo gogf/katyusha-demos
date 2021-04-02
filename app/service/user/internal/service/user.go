@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/gogf/gf/errors/gerror"
-	"github.com/gogf/gf/frame/g"
 	"github.com/gogf/gf/os/gtime"
 	"github.com/gogf/katyusha-demos/app/service/user/internal/dao"
 	"github.com/gogf/katyusha-demos/app/service/user/internal/model"
+	"github.com/gogf/katyusha-demos/app/service/user/protobuf/user"
 )
 
 // 中间件管理服务
@@ -35,31 +35,32 @@ func (s *serviceUser) SignUp(ctx context.Context, r *model.ServiceUserSignUpReq)
 	return nil
 }
 
-// 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串
+// 用户登录，成功返回用户信息，否则返回nil。
+// 为了使用到错误码演示，这里会判断并返回登录错误原因。
 func (s *serviceUser) SignIn(ctx context.Context, req *model.ServiceUserSignInReq) (*model.User, error) {
-	user, err := dao.User.Where(g.Slice{
-		dao.User.Columns.Passport, req.Passport,
-		dao.User.Columns.Password, req.Password,
-	}).One()
+	entity, err := dao.User.Where(dao.User.Columns.Passport, req.Passport).One()
 	if err != nil {
 		return nil, err
 	}
-	if user == nil {
-		return nil, gerror.New("账号或密码错误")
+	if entity == nil {
+		return nil, gerror.NewCodef(int(user.ErrCode_UserNotFound), `账号"%s"不存在`, req.Passport)
+	}
+	if entity.Password != req.Passport {
+		return nil, gerror.NewCode(int(user.ErrCode_PasswordIncorrect), `密码不正确`)
 	}
 	if err := Session.Set(ctx, &model.Session{
-		User:       user,
+		User:       entity,
 		LoginTime:  gtime.Now(),
 		LoginAgent: req.Agent,
 	}); err != nil {
-		return user, nil
+		return entity, nil
 	}
 	Context.SetUser(ctx, &model.ContextUser{
-		Id:       user.Id,
-		Passport: user.Passport,
-		Nickname: user.Nickname,
+		Id:       entity.Id,
+		Passport: entity.Passport,
+		Nickname: entity.Nickname,
 	})
-	return user, nil
+	return entity, nil
 }
 
 // 用户注销
@@ -87,9 +88,9 @@ func (s *serviceUser) CheckNickName(ctx context.Context, nickname string) bool {
 
 // 获得用户信息详情
 func (s *serviceUser) GetUser(ctx context.Context, userId uint) (*model.User, error) {
-	if user, err := dao.User.Ctx(ctx).FindOne(userId); err != nil {
+	if entity, err := dao.User.Ctx(ctx).FindOne(userId); err != nil {
 		return nil, err
 	} else {
-		return user, nil
+		return entity, nil
 	}
 }

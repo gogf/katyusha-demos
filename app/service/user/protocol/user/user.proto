@@ -29,11 +29,9 @@ message SignUpReq {
   // 账号
   string Passport  = 1 [(gogoproto.moretags) = 'v:"required|length:6,16#账号不能为空|账号长度应当在:min到:max之间"'];
   // 密码
-  string Password  = 2 [(gogoproto.moretags) = 'v:"required|length:6,16#请输入确认密码|密码长度应当在:min到:max之间"'];
-  // 确认密码（往往不需要）
-  string Password2 = 3 [(gogoproto.moretags) = 'v:"required|length:6,16|same:Password#密码不能为空|密码长度应当在:min到:max之间|两次密码输入不相等"'];
+  string Password  = 2 [(gogoproto.moretags) = 'v:"required|length:6,16#密码不能为空|密码长度应当在:min到:max之间"'];
   // 昵称
-  string Nickname  = 4;
+  string Nickname  = 3;
 }
 
 // 登录请求

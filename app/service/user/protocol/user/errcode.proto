@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "protobuf/user";
+
+// [10000 - 11000] 用户错误码范围。
+enum ErrCode {
+    Success           = 0;      // 保留，枚举第一个值必须是0
+    UserNotFound      = 10001;  // 用户不存在
+    PasswordIncorrect = 10002;  // 密码不正确
+    UserNotLogin      = 10003;  // 用户未登录
+}

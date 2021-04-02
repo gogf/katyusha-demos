@@ -15,7 +15,11 @@ var Interceptor = new(serviceInterceptor)
 type serviceInterceptor struct{}
 
 // 自定义上下文拦截器。
-func (s *serviceInterceptor) UnaryCtx(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func (s *serviceInterceptor) UnaryCtx(
+	ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler) (interface{}, error) {
 	var (
 		customCtx    model.Context
 		contextGrpc  = Context.GetContextGrpc(ctx)
@@ -43,8 +47,12 @@ func (s *serviceInterceptor) UnaryCtx(ctx context.Context, req interface{}, info
 	return res, err
 }
 
-// 统一StructTag校验器
-func (s *serviceInterceptor) UnaryValidate(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+// 统一StructTag校验器，使用gvalid数据校验组件
+func (s *serviceInterceptor) UnaryValidate(
+	ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler) (interface{}, error) {
 	// 如果没有StructTag，那么校验器什么都不会做
 	if err := gvalid.CheckStruct(req, nil); err != nil {
 		return nil, gerror.NewCode(

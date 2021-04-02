@@ -36,11 +36,11 @@ func (s *userApi) SignIn(ctx context.Context, req *user.SignInReq) (*user.SignIn
 	if err := gconv.Struct(req, &serviceReq); err != nil {
 		return nil, err
 	}
-	user, err := service.User.SignIn(ctx, serviceReq)
+	entity, err := service.User.SignIn(ctx, serviceReq)
 	if err != nil {
 		return nil, err
 	}
-	if err := gconv.Struct(user, &res.User); err != nil {
+	if err := gconv.Struct(entity, &res.User); err != nil {
 		return nil, err
 	}
 	if session := service.Context.Get(ctx).Session; session != nil {
@@ -79,11 +79,11 @@ func (s *userApi) CheckNickName(ctx context.Context, req *user.CheckNickNameReq)
 // 查询用户信息
 func (s *userApi) GetUser(ctx context.Context, req *user.GetUserReq) (*user.GetUserRes, error) {
 	res := user.GetUserRes{}
-	user, err := service.User.GetUser(ctx, uint(req.UserId))
+	entity, err := service.User.GetUser(ctx, uint(req.UserId))
 	if err != nil {
 		return nil, err
 	}
-	if err := gconv.Struct(user, &res.User); err != nil {
+	if err := gconv.Struct(entity, &res.User); err != nil {
 		return nil, err
 	}
 	return &res, nil
