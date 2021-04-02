@@ -30,3 +30,15 @@ type UserServiceSignUpReq struct {
 	Password string
 	Nickname string
 }
+
+// 用户登录参数
+type UserServiceSignInReq struct {
+	Passport string
+	Password string
+	Agent    string
+}
+
+// 用户登录返回参数
+type UserServiceSignInRes struct {
+	Token string
+}

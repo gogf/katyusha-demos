@@ -14,6 +14,8 @@ service User {
   rpc SignUp(SignUpReq) returns (NullRes) {}
   // 登录
   rpc SignIn(SignInReq) returns (SignInRes) {}
+  // 注销
+  rpc SignOut(SignOutReq) returns (NullRes) {}
   // 查询账号是否可用（唯一性）
   rpc CheckPassport(CheckPassportReq) returns (CheckPassportRes) {}
   // 查询昵称是否可用（唯一性）
@@ -48,6 +50,11 @@ message SignInReq {
 message SignInRes {
   EntityUser User  = 1; // 用户信息
   string     Token = 2; // SessionId
+}
+
+// 注销请求
+message SignOutReq {
+  string     Token = 1; // SessionId
 }
 
 // 账号唯一性检测请求参数，用于前后端交互参数格式约定

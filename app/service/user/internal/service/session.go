@@ -2,20 +2,20 @@ package service
 
 import (
 	"context"
+	"github.com/gogf/gf/net/gtrace"
 	"github.com/gogf/gf/os/gsession"
 	"github.com/gogf/gf/util/guid"
 	"github.com/gogf/katyusha-demos/app/service/user/internal/model"
-	"github.com/gogf/katyusha/krpc"
 	"time"
 )
 
 // Session管理服务
 var Session = &serviceSession{
-	CtxKeyGrpc: "token", // 用于Session唯一性识别
+	ctxKeyGrpc: "token", // 用于Session唯一性识别
 }
 
 type serviceSession struct {
-	CtxKeyGrpc string
+	ctxKeyGrpc string
 }
 
 const (
@@ -27,14 +27,14 @@ var (
 	sessionStorage = gsession.New(24*time.Hour, gsession.NewStorageMemory())
 )
 
-// 设置用户Session.
+// 获取/创建用户Session.
 func (s *serviceSession) New(sessionId string) *gsession.Session {
 	return sessionStorage.New(sessionId)
 }
 
 // 从Context读取SessionToken。
 func (s *serviceSession) Token(ctx context.Context) string {
-	return krpc.Ctx.IncomingMap(ctx).GetVar(s.CtxKeyGrpc).String()
+	return gtrace.GetBaggageVar(ctx, s.ctxKeyGrpc).String()
 }
 
 // 设置用户Session.
@@ -69,11 +69,16 @@ func (s *serviceSession) Get(ctx context.Context) *model.Session {
 	return nil
 }
 
-// 删除用户Session。
+// 删除用户Session（自动读取InComingMap中的token）。
 func (s *serviceSession) Remove(ctx context.Context) error {
 	customCtx := Context.Get(ctx)
 	if customCtx.Session != nil {
 		return customCtx.Session.Remove(sessionKey)
 	}
 	return nil
+}
+
+// 通过给定token删除用户Session信息。
+func (s *serviceSession) RemoveByToken(ctx context.Context, token string) error {
+	return s.New(token).Remove(sessionKey)
 }

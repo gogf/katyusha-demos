@@ -49,11 +49,16 @@ func (s *userApi) SignIn(ctx context.Context, req *user.SignInReq) (*user.SignIn
 	return &res, err
 }
 
+// 注销
+func (s *userApi) SignOut(ctx context.Context, req *user.SignOutReq) (*user.NullRes, error) {
+
+}
+
 // 获取Session信息
 func (s *userApi) GetSession(ctx context.Context, req *user.GetSessionReq) (*user.GetSessionRes, error) {
 	session := service.Session.GetByToken(ctx, req.Token)
 	if session == nil {
-		return nil, gerror.New("Session不存在")
+		return nil, gerror.NewCode(int(user.ErrCode_UserNotLogin), "Session不存在")
 	}
 	var res user.GetSessionRes
 	if err := gconv.Struct(session, &res); err != nil {

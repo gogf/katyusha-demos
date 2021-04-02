@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
+	"github.com/gogf/gf/net/gtrace"
 	"github.com/gogf/katyusha-demos/app/service/user/internal/model"
-	"github.com/gogf/katyusha/krpc"
 )
 
 // 上下文管理服务
@@ -18,7 +18,7 @@ func (s *serviceContext) Init(ctx context.Context, customCtx *model.Context) con
 
 // 获取服务间传递的信息，可能为空
 func (s *serviceContext) GetContextGrpc(ctx context.Context) *model.ContextGrpc {
-	v := krpc.Ctx.IncomingMap(ctx).GetVar(model.ContextKeyGrpc)
+	v := gtrace.GetBaggageVar(ctx, model.ContextKeyGrpc)
 	if v.IsNil() {
 		return nil
 	}
