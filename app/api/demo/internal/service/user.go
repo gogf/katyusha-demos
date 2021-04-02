@@ -2,65 +2,88 @@ package service
 
 import (
 	"context"
-	"github.com/gogf/gf/errors/gerror"
-	"github.com/gogf/gf/frame/g"
-	"github.com/gogf/gf/os/gtime"
-	"github.com/gogf/katyusha-demos/app/service/user/protobuf/user"
-	"time"
+	"errors"
+	"fmt"
+	"github.com/gogf/katyusha-demos/app/api/demo/internal/model"
 )
 
-// 用户业务逻辑封装
+// 中间件管理服务
 var User = userService{}
 
 type userService struct{}
 
-// 保持用户在线状态（session不退出）
-func (s *userService) KeepLogin(passport, password string) {
-	agent := "demo-job"
-	signInRes, err := Client.User.SignIn(context.Background(), &user.SignInReq{
-		Passport: passport,
-		Password: password,
-		Agent:    agent,
-	})
+// 用户注册
+func (s *userService) SignUp(r *model.UserServiceSignUpReq) error {
+	// 昵称为非必需参数，默认使用账号名称
+	if r.Nickname == "" {
+		r.Nickname = r.Passport
+	}
+	// 账号唯一性数据检查
+	if !Client.User.CheckPassport() {
+		return errors.New(fmt.Sprintf("账号 %s 已经存在", r.Passport))
+	}
+	// 昵称唯一性数据检查
+	if !s.CheckNickName(r.Nickname) {
+		return errors.New(fmt.Sprintf("昵称 %s 已经存在", r.Nickname))
+	}
+	if _, err := dao.User.Save(r); err != nil {
+		return err
+	}
+	return nil
+}
+
+// 判断用户是否已经登录
+func (s *userService) IsSignedIn(ctx context.Context) bool {
+	if v := Context.Get(ctx); v != nil && v.User != nil {
+		return true
+	}
+	return false
+}
+
+// 用户登录，成功返回用户信息，否则返回nil; passport应当会md5值字符串
+func (s *userService) SignIn(ctx context.Context, passport, password string) error {
+	user, err := dao.User.FindOne("passport=? and password=?", passport, password)
 	if err != nil {
-		if gerror.Code(err) == int(user.ErrCode_UserNotFound) {
-			g.Log().Debugf(`user "%s" not found, do auto signup`, passport)
-			_, err = Client.User.SignUp(context.Background(), &user.SignUpReq{
-				Passport: passport,
-				Password: password,
-				Nickname: passport,
-			})
-			if err != nil {
-				g.Log().Fatal(err)
-			}
-			g.Log().Debugf(`user "%s" auto signup success, do auto login`, passport)
-			signInRes, err = Client.User.SignIn(context.Background(), &user.SignInReq{
-				Passport: passport,
-				Password: password,
-				Agent:    agent,
-			})
-			if err != nil {
-				g.Log().Fatal(err)
-			}
-		} else {
-			g.Log().Fatal(err)
-		}
+		return err
 	}
-	g.Log().Debugf(`user "%s" logins success, token: %s`, passport, signInRes.Token)
-	for {
-		time.Sleep(5 * time.Second)
-		// 只要Session在使用则服务端会自动续期
-		getSessionRes, err := Client.User.GetSession(context.Background(), &user.GetSessionReq{
-			Token: signInRes.Token,
-		})
-		if err != nil {
-			g.Log().Debugf(`auto keep login failed: %+v`, err)
-		} else {
-			g.Log().Debugf(
-				`auto keep login, first login time: %s, agent: %s`,
-				gtime.New(getSessionRes.LoginTime).String(),
-				getSessionRes.LoginAgent,
-			)
-		}
+	if user == nil {
+		return errors.New("账号或密码错误")
 	}
+	if err := Session.SetUser(ctx, user); err != nil {
+		return nil
+	}
+	Context.SetUser(ctx, &model.ContextUser{
+		Id:       user.Id,
+		Passport: user.Passport,
+		Nickname: user.Nickname,
+	})
+	return nil
+}
+
+// 用户注销
+func (s *userService) SignOut(ctx context.Context) error {
+	return Session.RemoveUser(ctx)
+}
+
+// 检查账号是否符合规范(目前仅检查唯一性),存在返回false,否则true
+func (s *userService) CheckPassport(passport string) bool {
+	if i, err := dao.User.FindCount("passport", passport); err != nil {
+		return false
+	} else {
+		return i == 0
+	}
+}
+
+// 检查昵称是否符合规范(目前仅检查唯一性),存在返回false,否则true
+func (s *userService) CheckNickName(nickname string) bool {
+	if i, err := dao.User.FindCount("nickname", nickname); err != nil {
+		return false
+	} else {
+		return i == 0
+	}
+}
+
+// 获得用户信息详情
+func (s *userService) GetProfile(ctx context.Context) *model.User {
+	return Session.GetUser(ctx)
 }

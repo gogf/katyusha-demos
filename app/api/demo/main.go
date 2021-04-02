@@ -1,23 +1,17 @@
 package main
 
 import (
-	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/api"
-	"github.com/gogf/katyusha-demos/app/service/demos-service/internal/service"
-	"github.com/gogf/katyusha-demos/app/service/demos-service/protobuf/demos"
-	"github.com/gogf/katyusha/krpc"
+	"github.com/gogf/gf/frame/g"
+	"github.com/gogf/gf/net/ghttp"
+	"github.com/gogf/katyusha-demos/app/api/demo/internal/api"
 )
 
 func main() {
-	c := krpc.Server.NewGrpcServerConfig()
-	c.Options = append(
-		c.Options,
-		krpc.Server.ChainUnary(
-			service.Interceptor.UnaryCtx,
-			service.Interceptor.UnaryValidate,
-		),
-	)
-	s := krpc.Server.NewGrpcServer(c)
-	demos.RegisterEchoServer(s.Server, api.Echo)
-	demos.RegisterUserServer(s.Server, api.User)
+	s := g.Server()
+	s.Group("/", func(group *ghttp.RouterGroup) {
+		group.ALLMap(g.Map{
+			"/echo": api.Echo,
+		})
+	})
 	s.Run()
 }

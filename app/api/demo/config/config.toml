@@ -1,4 +1,7 @@
 [discovery]
     endpoints = ["127.0.0.1:2379"]
 
-
+[server]
+    Address        = ":8199"
+    ServerAgent    = "katyusha-demos"
+    LogPath        = "/tmp/log/katyusha-demos/demo"

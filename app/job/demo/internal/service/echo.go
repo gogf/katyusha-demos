@@ -13,8 +13,8 @@ var Echo = echoService{}
 type echoService struct{}
 
 // 打个招呼
-func (s *echoService) Say(content string) (reply string, err error) {
-	sayRes, err := Client.Echo.Say(context.Background(), &echo.SayReq{
+func (s *echoService) Say(ctx context.Context, content string) (reply string, err error) {
+	sayRes, err := Client.Echo.Say(ctx, &echo.SayReq{
 		Content: content,
 	})
 	if err != nil {
@@ -28,7 +28,7 @@ func (s *echoService) SayHiTimely() {
 	for {
 		content := "hi"
 		g.Log().Print("  say:", content)
-		reply, err := s.Say(content)
+		reply, err := s.Say(context.Background(), content)
 		if err != nil {
 			g.Log().Print(err)
 		} else {
