@@ -22,11 +22,15 @@ func (s *serviceUser) SignUp(ctx context.Context, r *model.ServiceUserSignUpReq)
 		r.Nickname = r.Passport
 	}
 	// 账号唯一性数据检查
-	if !s.CheckPassport(ctx, r.Passport) {
+	if result, err := s.CheckPassport(ctx, r.Passport); err != nil {
+		return err
+	} else if !result {
 		return gerror.New(fmt.Sprintf("账号 %s 已经存在", r.Passport))
 	}
 	// 昵称唯一性数据检查
-	if !s.CheckNickName(ctx, r.Nickname) {
+	if result, err := s.CheckNickName(ctx, r.Nickname); err != nil {
+		return err
+	} else if !result {
 		return gerror.New(fmt.Sprintf("昵称 %s 已经存在", r.Nickname))
 	}
 	if _, err := dao.User.Ctx(ctx).Save(r); err != nil {
@@ -45,7 +49,7 @@ func (s *serviceUser) SignIn(ctx context.Context, req *model.ServiceUserSignInRe
 	if entity == nil {
 		return nil, gerror.NewCodef(int(user.ErrCode_UserNotFound), `账号"%s"不存在`, req.Passport)
 	}
-	if entity.Password != req.Passport {
+	if entity.Password != req.Password {
 		return nil, gerror.NewCode(int(user.ErrCode_PasswordIncorrect), `密码不正确`)
 	}
 	if err := Session.Set(ctx, &model.Session{
@@ -68,21 +72,21 @@ func (s *serviceUser) SignOut(ctx context.Context) error {
 	return Session.Remove(ctx)
 }
 
-// 检查账号是否符合规范(目前仅检查唯一性),存在返回false,否则true
-func (s *serviceUser) CheckPassport(ctx context.Context, passport string) bool {
+// 检查账号是否可用(目前仅检查唯一性),存在返回false,否则true
+func (s *serviceUser) CheckPassport(ctx context.Context, passport string) (bool, error) {
 	if n, err := dao.User.Ctx(ctx).FindCount(dao.User.Columns.Passport, passport); err != nil {
-		return false
+		return false, err
 	} else {
-		return n > 0
+		return n == 0, nil
 	}
 }
 
-// 检查昵称是否符合规范(目前仅检查唯一性),存在返回false,否则true
-func (s *serviceUser) CheckNickName(ctx context.Context, nickname string) bool {
+// 检查昵称是否可用(目前仅检查唯一性),存在返回false,否则true
+func (s *serviceUser) CheckNickName(ctx context.Context, nickname string) (bool, error) {
 	if n, err := dao.User.Ctx(ctx).FindCount(dao.User.Columns.Nickname, nickname); err != nil {
-		return false
+		return false, err
 	} else {
-		return n > 0
+		return n == 0, nil
 	}
 }
 

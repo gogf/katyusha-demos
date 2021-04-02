@@ -2,28 +2,24 @@ package main
 
 import (
 	"github.com/gogf/gf/frame/g"
+	"github.com/gogf/gf/net/ghttp"
+	"github.com/gogf/katyusha-demos/app/service/echo/protobuf/echo"
 	"github.com/gogf/katyusha-demos/protobuf/demos"
 	"github.com/gogf/katyusha/krpc"
 	"golang.org/x/net/context"
 	"time"
 )
 
-func main() {
-	conn, err := krpc.Client.NewGrpcClientConn("demos")
-	if err != nil {
-		panic(err)
-	}
-	defer conn.Close()
+var Echo = echoApi{}
 
-	echoClient := demos.NewEchoClient(conn)
-	for i := 0; i < 500; i++ {
-		res, err := echoClient.Say(context.Background(), &demos.SayReq{Content: "Hello"})
-		if err != nil {
-			g.Log().Error(err)
-			time.Sleep(time.Second)
-			continue
-		}
-		time.Sleep(time.Second)
-		g.Log().Print("Response:", res.Content)
+type echoApi struct{}
+
+func (a *echoApi) Say(r *ghttp.Request) {
+	sayRes, err := service.Echo.Say(r.Context(), &echo.SayReq{
+		Content: content,
+	})
+	if err != nil {
+		return "", err
 	}
+	return sayRes.Content, nil
 }

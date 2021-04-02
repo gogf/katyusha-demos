@@ -10,7 +10,7 @@ func main() {
 	err := gcmd.BindHandleMap(map[string]func(){
 		"echo": service.Echo.SayHiTimely,
 		"user": func() {
-			service.User.KeepLogin("john", "123")
+			service.User.KeepLogin("johnguo", "123456")
 		},
 	})
 	if err != nil {

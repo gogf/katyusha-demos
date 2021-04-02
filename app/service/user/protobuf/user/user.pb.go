@@ -771,9 +771,9 @@ type UserClient interface {
 	SignUp(ctx context.Context, in *SignUpReq, opts ...grpc.CallOption) (*NullRes, error)
 	// 登录
 	SignIn(ctx context.Context, in *SignInReq, opts ...grpc.CallOption) (*SignInRes, error)
-	// 查询账号唯一性
+	// 查询账号是否可用（唯一性）
 	CheckPassport(ctx context.Context, in *CheckPassportReq, opts ...grpc.CallOption) (*CheckPassportRes, error)
-	// 查询昵称唯一性
+	// 查询昵称是否可用（唯一性）
 	CheckNickName(ctx context.Context, in *CheckNickNameReq, opts ...grpc.CallOption) (*CheckNickNameRes, error)
 	// 获取指定Session信息
 	GetSession(ctx context.Context, in *GetSessionReq, opts ...grpc.CallOption) (*GetSessionRes, error)
@@ -849,9 +849,9 @@ type UserServer interface {
 	SignUp(context.Context, *SignUpReq) (*NullRes, error)
 	// 登录
 	SignIn(context.Context, *SignInReq) (*SignInRes, error)
-	// 查询账号唯一性
+	// 查询账号是否可用（唯一性）
 	CheckPassport(context.Context, *CheckPassportReq) (*CheckPassportRes, error)
-	// 查询昵称唯一性
+	// 查询昵称是否可用（唯一性）
 	CheckNickName(context.Context, *CheckNickNameReq) (*CheckNickNameRes, error)
 	// 获取指定Session信息
 	GetSession(context.Context, *GetSessionReq) (*GetSessionRes, error)

@@ -14,9 +14,9 @@ service User {
   rpc SignUp(SignUpReq) returns (NullRes) {}
   // 登录
   rpc SignIn(SignInReq) returns (SignInRes) {}
-  // 查询账号唯一性
+  // 查询账号是否可用（唯一性）
   rpc CheckPassport(CheckPassportReq) returns (CheckPassportRes) {}
-  // 查询昵称唯一性
+  // 查询昵称是否可用（唯一性）
   rpc CheckNickName(CheckNickNameReq) returns (CheckNickNameRes) {}
   // 获取指定Session信息
   rpc GetSession(GetSessionReq) returns (GetSessionRes) {}

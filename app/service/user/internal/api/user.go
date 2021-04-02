@@ -59,21 +59,24 @@ func (s *userApi) GetSession(ctx context.Context, req *user.GetSessionReq) (*use
 	if err := gconv.Struct(session, &res); err != nil {
 		return nil, err
 	}
+	res.LoginTime = session.LoginTime.Timestamp()
 	return &res, nil
 }
 
-// 检测账号唯一性
+// 检测账号是否可用（唯一性）
 func (s *userApi) CheckPassport(ctx context.Context, req *user.CheckPassportReq) (*user.CheckPassportRes, error) {
 	res := user.CheckPassportRes{}
-	res.Ok = service.User.CheckPassport(ctx, req.Passport)
-	return &res, nil
+	ok, err := service.User.CheckPassport(ctx, req.Passport)
+	res.Ok = ok
+	return &res, err
 }
 
-// 检测昵称唯一性
+// 检测昵称是否可用（唯一性）
 func (s *userApi) CheckNickName(ctx context.Context, req *user.CheckNickNameReq) (*user.CheckNickNameRes, error) {
 	res := user.CheckNickNameRes{}
-	res.Ok = service.User.CheckPassport(ctx, req.Nickname)
-	return &res, nil
+	ok, err := service.User.CheckPassport(ctx, req.Nickname)
+	res.Ok = ok
+	return &res, err
 }
 
 // 查询用户信息
